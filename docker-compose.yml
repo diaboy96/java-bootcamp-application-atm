@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  data-service-postgres:
+    container_name: data_service_postgres_database
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data/data-service/data/:/var/lib/postgresql/data
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+  data-service:
+    build:
+      context: data-service
+      dockerfile: Dockerfile
+    image: java-bootcamp-application-atm-data-service
+    container_name: data_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - data-service-postgres
+  adminer:
+    container_name: postgres_adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8086:8080"
