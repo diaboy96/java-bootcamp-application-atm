@@ -92,7 +92,7 @@ public class BootstrapData implements CommandLineRunner {
         cardService.delete(jansCard);
 
         // deletion of bank account (with payment card linked to the account)
-        bankAccountService.delete(lubossBankAccount);
+        bankAccountService.delete(jansBankAccount);
 
         // deletion of client (with his bank accounts and cards linked to accounts)
         clientService.delete(clientZdena);
