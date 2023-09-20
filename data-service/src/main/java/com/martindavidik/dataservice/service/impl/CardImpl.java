@@ -1,6 +1,8 @@
 package com.martindavidik.dataservice.service.impl;
 
 import com.martindavidik.dataservice.domain.Card;
+import com.martindavidik.dataservice.dto.AccountInfoDTO;
+import com.martindavidik.dataservice.mapper.AccountInfoMapper;
 import com.martindavidik.dataservice.pojo.HashedPassword;
 import com.martindavidik.dataservice.repository.CardRepository;
 import com.martindavidik.dataservice.service.CardService;
@@ -18,6 +20,14 @@ public class CardImpl implements CardService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private AccountInfoMapper accountInfoMapper;
+
+    @Override
+    public AccountInfoDTO getCardHolderAccountInfo(Card card) {
+        return accountInfoMapper.mapDomainToDTO(card);
+    }
 
     @Override
     public Card setPinCodeForTheCard(Card card, String pinCode) {

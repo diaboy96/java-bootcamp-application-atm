@@ -1,14 +1,12 @@
 package com.martindavidik.dataservice.controller;
 
 import com.martindavidik.dataservice.domain.Card;
+import com.martindavidik.dataservice.dto.AccountInfoDTO;
 import com.martindavidik.dataservice.pojo.HashedPassword;
 import com.martindavidik.dataservice.service.CardService;
 import com.martindavidik.dataservice.service.SecurityService;
 import jakarta.validation.constraints.Size;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -19,8 +17,8 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class CardController {
 
-    public final CardService cardService;
-    public final SecurityService securityService;
+    private final CardService cardService;
+    private final SecurityService securityService;
     private static final int MAXIMUM_FAILED_PIN_ATTEMPTS = 3;
 
     public CardController(CardService cardService, SecurityService securityService) {
@@ -126,5 +124,32 @@ public class CardController {
         }
 
         return false;
+    }
+
+    /**
+     * Provides "Name", "Surname" of account holder and account balance
+     *
+     * @param cardNumber - number of payment card
+     * @param expiryMonth - in format "mm"
+     * @param expiryYear - in format "yy"
+     * @param cvv - card verification value
+     *
+     * @return AccountInfoDTO
+     */
+    @GetMapping("/getCardHolderAccountInfo")
+    public AccountInfoDTO getCardHolderAccountInfo(
+            @RequestParam @Size(min = 16, max = 19) String cardNumber,
+            @RequestParam @Size(min = 2, max = 2) String expiryMonth,
+            @RequestParam @Size(min = 2, max = 2) String expiryYear,
+            @RequestParam @Size(min = 3, max = 4) String cvv
+    ) {
+        Optional<Card> cardOptional = cardService.getCardByData(cardNumber, expiryMonth, expiryYear, cvv);
+        if (cardOptional.isPresent()) {
+            Card card = cardOptional.get();
+
+            return cardService.getCardHolderAccountInfo(card);
+        }
+
+        return null;
     }
 }
