@@ -21,6 +21,7 @@ public class CardController {
 
     public final CardService cardService;
     public final SecurityService securityService;
+    private static final int MAXIMUM_FAILED_PIN_ATTEMPTS = 3;
 
     public CardController(CardService cardService, SecurityService securityService) {
         this.cardService = cardService;
@@ -107,7 +108,21 @@ public class CardController {
             Card card = cardOptional.get();
             HashedPassword storedPassword = new HashedPassword(card.getPinCodeHash(), card.getPinCodeSalt());
 
-            return securityService.validatePassword(pinCode, storedPassword);
+            // pin is ok
+            if (securityService.validatePassword(pinCode, storedPassword)) {
+                card.setFailedPinAttempts(0); // reset counter of failed pin attempts
+                cardService.save(card);
+
+                return card.isActive();
+            }
+
+            // increase failed pin attempts after entering wrong pin code (after exceeding maximum attempts, account is disabled)
+            card.setFailedPinAttempts(card.getFailedPinAttempts() + 1);
+            if (card.getFailedPinAttempts() > MAXIMUM_FAILED_PIN_ATTEMPTS)
+            {
+                card.setActive(false);
+            }
+            cardService.save(card);
         }
 
         return false;
