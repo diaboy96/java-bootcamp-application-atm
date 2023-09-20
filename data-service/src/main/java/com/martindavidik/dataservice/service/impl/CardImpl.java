@@ -25,6 +25,21 @@ public class CardImpl implements CardService {
     private AccountInfoMapper accountInfoMapper;
 
     @Override
+    public boolean withdrawMoney(Card card, double amount) {
+        double accountBalance = card.getBankAccount().getBalance();
+
+        if (card.isActive() && accountBalance >= amount)
+        {
+            card.getBankAccount().setBalance(accountBalance - amount);
+            save(card);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public AccountInfoDTO getCardHolderAccountInfo(Card card) {
         return accountInfoMapper.mapDomainToDTO(card);
     }

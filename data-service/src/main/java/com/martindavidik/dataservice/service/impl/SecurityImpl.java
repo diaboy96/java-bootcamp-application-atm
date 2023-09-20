@@ -13,22 +13,22 @@ import java.util.Arrays;
 @Service
 public class SecurityImpl implements SecurityService {
 
-    private final int iterations = 2;
-    private final int memLimit = 66536;
-    private final int hashLength = 32;
-    private final int parallelism = 1;
+    private static final int ITERATIONS = 2;
+    private static final int MEMORY_LIMIT = 66536;
+    private static final int HASH_LENGTH = 32;
+    private static final int PARALLELISM = 1;
 
     private HashedPassword encrypt(String password, byte[] salt) {
         Argon2Parameters.Builder builder = new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
                 .withVersion(Argon2Parameters.ARGON2_VERSION_13)
-                .withIterations(iterations)
-                .withMemoryAsKB(memLimit)
-                .withParallelism(parallelism)
+                .withIterations(ITERATIONS)
+                .withMemoryAsKB(MEMORY_LIMIT)
+                .withParallelism(PARALLELISM)
                 .withSalt(salt);
 
         Argon2BytesGenerator generate = new Argon2BytesGenerator();
         generate.init(builder.build());
-        byte[] result = new byte[hashLength];
+        byte[] result = new byte[HASH_LENGTH];
         generate.generateBytes(password.getBytes(StandardCharsets.UTF_8), result, 0, result.length);
 
         return new HashedPassword(result, salt);

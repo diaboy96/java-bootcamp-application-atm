@@ -152,4 +152,33 @@ public class CardController {
 
         return null;
     }
+
+    /**
+     * Deducts money from the user's account
+     *
+     * @param cardNumber - number of payment card
+     * @param expiryMonth - in format "mm"
+     * @param expiryYear - in format "yy"
+     * @param cvv - card verification value
+     * @param amount - amount of money to withdraw
+     *
+     * @return TRUE if the withdrawal was SUCCESSFULL
+     */
+    @PutMapping("/withdrawMoney/{amount}")
+    public boolean withdrawMoney(
+            @RequestParam @Size(min = 16, max = 19) String cardNumber,
+            @RequestParam @Size(min = 2, max = 2) String expiryMonth,
+            @RequestParam @Size(min = 2, max = 2) String expiryYear,
+            @RequestParam @Size(min = 3, max = 4) String cvv,
+            @PathVariable double amount
+    ) {
+        Optional<Card> cardOptional = cardService.getCardByData(cardNumber, expiryMonth, expiryYear, cvv);
+        if (cardOptional.isPresent()) {
+            Card card = cardOptional.get();
+
+            return cardService.withdrawMoney(card, amount);
+        }
+
+        return false;
+    }
 }

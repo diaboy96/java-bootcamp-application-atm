@@ -22,6 +22,9 @@ public class BootstrapData implements CommandLineRunner {
         this.clientService = clientService;
     }
 
+    /**
+     * Bootstraps testing data
+     */
     @Override
     public void run(String... args) {
         // create client instances (simulated process of registration to internet banking)

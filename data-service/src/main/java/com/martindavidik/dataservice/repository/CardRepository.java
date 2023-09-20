@@ -2,7 +2,6 @@ package com.martindavidik.dataservice.repository;
 
 import com.martindavidik.dataservice.domain.Card;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
