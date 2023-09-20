@@ -7,11 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,19 +21,23 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Account {
+@AllArgsConstructor
+@NoArgsConstructor
+public class BankAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int accountId;
-
-    private double balance;
+    private int bankAccountId;
 
     @ManyToOne
     @JoinColumn(name = "clientId", nullable = false)
+    @NonNull
     private Client client;
 
-    @OneToMany(mappedBy = "account")
+    private double balance = 0;
+
+    @OneToMany(mappedBy = "bankAccount")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     private Set<Card> cards = new HashSet<>();
 
@@ -42,8 +45,8 @@ public class Account {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Account account = (Account) o;
-        return Objects.equals(getAccountId(), account.getAccountId());
+        BankAccount bankAccount = (BankAccount) o;
+        return Objects.equals(getBankAccountId(), bankAccount.getBankAccountId());
     }
 
     @Override
