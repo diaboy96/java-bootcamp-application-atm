@@ -24,7 +24,6 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
         // create client instances (simulated process of registration to internet banking)
         Client clientAdam = new Client("Adam", "Novák", "9911115445", "adam.novak@email.cz");
         clientService.save(clientAdam);
@@ -96,5 +95,9 @@ public class BootstrapData implements CommandLineRunner {
 
         // deletion of client (with his bank accounts and cards linked to accounts)
         clientService.delete(clientZdena);
+
+
+        // set pin code for Adam´s payment card
+        cardService.setPinCodeForTheCard(adamsCard, "0123");
     }
 }

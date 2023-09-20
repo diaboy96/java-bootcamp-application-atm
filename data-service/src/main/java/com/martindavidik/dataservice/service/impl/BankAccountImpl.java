@@ -3,7 +3,6 @@ package com.martindavidik.dataservice.service.impl;
 import com.martindavidik.dataservice.domain.BankAccount;
 import com.martindavidik.dataservice.repository.BankAccountRepository;
 import com.martindavidik.dataservice.service.BankAccountService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ public class BankAccountImpl implements BankAccountService {
     }
 
     @Override
-    @Transactional
     public void delete(BankAccount bankAccount) {
         bankAccountRepository.delete(bankAccount);
     }

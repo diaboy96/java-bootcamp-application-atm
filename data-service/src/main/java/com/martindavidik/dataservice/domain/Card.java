@@ -43,7 +43,9 @@ public class Card {
     @NonNull
     private String cvv;
 
-    private String pinCodeHash;
+    private byte[] pinCodeHash;
+
+    private byte[] pinCodeSalt;
 
     private int failedPinAttempts = 0;
 

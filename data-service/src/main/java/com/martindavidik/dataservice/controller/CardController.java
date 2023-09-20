@@ -1,7 +1,9 @@
 package com.martindavidik.dataservice.controller;
 
 import com.martindavidik.dataservice.domain.Card;
+import com.martindavidik.dataservice.pojo.HashedPassword;
 import com.martindavidik.dataservice.service.CardService;
+import com.martindavidik.dataservice.service.SecurityService;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +20,11 @@ import java.util.Optional;
 public class CardController {
 
     public final CardService cardService;
+    public final SecurityService securityService;
 
-    public CardController(CardService cardService) {
+    public CardController(CardService cardService, SecurityService securityService) {
         this.cardService = cardService;
+        this.securityService = securityService;
     }
 
     /**
@@ -76,5 +80,36 @@ public class CardController {
 
         // expired if today is equals or after dateParsed
         return today.isBefore(dateParsed);
+    }
+
+    /**
+     * Checks whether the PIN code corresponds to the PIN of the payment card
+     *
+     * @param cardNumber - number of payment card
+     * @param expiryMonth - in format "mm"
+     * @param expiryYear - in format "yy"
+     * @param cvv - card verification value
+     * @param pinCode - 4 digit pin code for the payment card
+     *
+     * @return TRUE when pin code is VALID
+     */
+    @GetMapping("/verifyPinCode")
+    public boolean verifyPinCode(
+            @RequestParam @Size(min = 16, max = 19) String cardNumber,
+            @RequestParam @Size(min = 2, max = 2) String expiryMonth,
+            @RequestParam @Size(min = 2, max = 2) String expiryYear,
+            @RequestParam @Size(min = 3, max = 4) String cvv,
+            @RequestParam @Size(min = 4, max = 4) String pinCode
+    ) {
+        Optional<Card> cardOptional = cardService.getCardByData(cardNumber, expiryMonth, expiryYear, cvv);
+        if (cardOptional.isPresent()) {
+            // get hashed password from database
+            Card card = cardOptional.get();
+            HashedPassword storedPassword = new HashedPassword(card.getPinCodeHash(), card.getPinCodeSalt());
+
+            return securityService.validatePassword(pinCode, storedPassword);
+        }
+
+        return false;
     }
 }
